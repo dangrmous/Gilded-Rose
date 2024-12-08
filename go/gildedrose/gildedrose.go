@@ -5,6 +5,30 @@ type Item struct {
 	SellIn, Quality int
 }
 
+type qualityRate struct {
+	rate  int
+	fixed bool
+}
+
+type qualityRateAdjustment struct {
+	whenSellInBelow int
+	newRate         qualityRate
+}
+
+type specialItemData struct {
+	qr                     qualityRate
+	qualityRateAdjustments []qualityRateAdjustment
+	fixedSellIn            bool
+}
+
+var specialItems = map[string]specialItemData{
+	"Sulfuras, Hand of Ragnaros": {
+		qr:                     qualityRate{},
+		qualityRateAdjustments: []qualityRateAdjustment{},
+		fixedSellIn:            true,
+	},
+}
+
 func adjustQuality(item *Item) {
 	if item.Name == `Sulfuras, Hand of Ragnaros` {
 		return
