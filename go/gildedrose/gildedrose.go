@@ -5,16 +5,33 @@ type Item struct {
 	SellIn, Quality int
 }
 
-type ItemInfo struct {
-	Item
-	QualityRate int
-	HasSellIn   bool
+func adjustQuality(item *Item) {
+	item.Quality += getQualityRate(item)
+	if item.Name == "Backstage passes to a TAFKAL80ETC concert" && item.SellIn <= 0 {
+		item.Quality = 0
+	}
+	if item.Quality > 50 {
+		item.Quality = 50
+	}
 }
 
-func incrementQuality(item *Item) {
-	if item.Quality < 50 {
-		item.Quality++
+func getQualityRate(item *Item) int {
+	qualityRate := -1
+	if item.Name == `Sulfuras, Hand of Ragnaros` {
+		qualityRate = 0
 	}
+	if item.Name == `Aged Brie` {
+		qualityRate = 1
+	}
+	if item.Name == "Backstage passes to a TAFKAL80ETC concert" {
+		if item.SellIn < 11 {
+			qualityRate = 2
+		}
+		if item.SellIn < 6 {
+			qualityRate = 3
+		}
+	}
+	return qualityRate
 }
 
 func UpdateQuality(items []*Item) {
@@ -31,10 +48,10 @@ func UpdateQuality(items []*Item) {
 				items[i].Quality = items[i].Quality + 1
 				if items[i].Name == "Backstage passes to a TAFKAL80ETC concert" {
 					if items[i].SellIn < 11 {
-						incrementQuality(items[i])
+						adjustQuality(items[i])
 					}
 					if items[i].SellIn < 6 {
-						incrementQuality(items[i])
+						adjustQuality(items[i])
 					}
 				}
 			}
