@@ -5,35 +5,6 @@ type Item struct {
 	SellIn, Quality int
 }
 
-func adjustQuality(item *Item) {
-	item.Quality += getQualityRate(item)
-	if item.Name == "Backstage passes to a TAFKAL80ETC concert" && item.SellIn <= 0 {
-		item.Quality = 0
-	}
-	if item.Quality > 50 {
-		item.Quality = 50
-	}
-}
-
-func getQualityRate(item *Item) int {
-	qualityRate := -1
-	if item.Name == `Sulfuras, Hand of Ragnaros` {
-		qualityRate = 0
-	}
-	if item.Name == `Aged Brie` {
-		qualityRate = 1
-	}
-	if item.Name == "Backstage passes to a TAFKAL80ETC concert" {
-		if item.SellIn < 11 {
-			qualityRate = 2
-		}
-		if item.SellIn < 6 {
-			qualityRate = 3
-		}
-	}
-	return qualityRate
-}
-
 func UpdateQuality(items []*Item) {
 	for i := 0; i < len(items); i++ {
 
@@ -48,10 +19,14 @@ func UpdateQuality(items []*Item) {
 				items[i].Quality = items[i].Quality + 1
 				if items[i].Name == "Backstage passes to a TAFKAL80ETC concert" {
 					if items[i].SellIn < 11 {
-						adjustQuality(items[i])
+						if items[i].Quality < 50 {
+							items[i].Quality = items[i].Quality + 1
+						}
 					}
 					if items[i].SellIn < 6 {
-						adjustQuality(items[i])
+						if items[i].Quality < 50 {
+							items[i].Quality = items[i].Quality + 1
+						}
 					}
 				}
 			}
