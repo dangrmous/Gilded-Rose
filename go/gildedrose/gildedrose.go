@@ -5,6 +5,18 @@ type Item struct {
 	SellIn, Quality int
 }
 
+type ItemInfo struct {
+	Item
+	QualityRate int
+	HasSellIn   bool
+}
+
+func incrementQuality(item *Item) {
+	if item.Quality < 50 {
+		item.Quality++
+	}
+}
+
 func UpdateQuality(items []*Item) {
 	for i := 0; i < len(items); i++ {
 
@@ -19,14 +31,10 @@ func UpdateQuality(items []*Item) {
 				items[i].Quality = items[i].Quality + 1
 				if items[i].Name == "Backstage passes to a TAFKAL80ETC concert" {
 					if items[i].SellIn < 11 {
-						if items[i].Quality < 50 {
-							items[i].Quality = items[i].Quality + 1
-						}
+						incrementQuality(items[i])
 					}
 					if items[i].SellIn < 6 {
-						if items[i].Quality < 50 {
-							items[i].Quality = items[i].Quality + 1
-						}
+						incrementQuality(items[i])
 					}
 				}
 			}
