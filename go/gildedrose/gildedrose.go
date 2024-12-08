@@ -16,12 +16,18 @@ func adjustQuality(item *Item) {
 	if item.Quality > 50 {
 		item.Quality = 50
 	}
+	if item.Quality < 0 {
+		item.Quality = 0
+	}
 }
 
 func getQualityRate(item *Item) int {
 	qualityRate := -1
 	if item.Name == `Aged Brie` {
 		qualityRate = 1
+	}
+	if item.SellIn <= 0 {
+		qualityRate = qualityRate * 2
 	}
 	if item.Name == "Backstage passes to a TAFKAL80ETC concert" {
 		qualityRate = 1
