@@ -5,27 +5,34 @@ type Item struct {
 	SellIn, Quality int
 }
 
-type qualityRate struct {
-	rate  int
-	fixed bool
-}
-
 type qualityRateAdjustment struct {
 	whenSellInBelow int
-	newRate         qualityRate
+	newRate         int
 }
 
 type specialItemData struct {
-	qr                     qualityRate
+	qualityRate            int
 	qualityRateAdjustments []qualityRateAdjustment
 	fixedSellIn            bool
+	hasZeroQualitySellIn   bool
+	zeroQualitySellIn      int
 }
 
 var specialItems = map[string]specialItemData{
 	"Sulfuras, Hand of Ragnaros": {
-		qr:                     qualityRate{},
-		qualityRateAdjustments: []qualityRateAdjustment{},
-		fixedSellIn:            true,
+		qualityRate: 0,
+		fixedSellIn: true,
+	},
+	"Aged Brie": {
+		qualityRate: 1,
+	},
+	"Backstage passes to a TAFKAL80ETC concert": {
+		qualityRateAdjustments: []qualityRateAdjustment{
+			{whenSellInBelow: 11, newRate: 2},
+			{whenSellInBelow: 6, newRate: 3},
+		},
+		hasZeroQualitySellIn: true,
+		zeroQualitySellIn:    0,
 	},
 }
 
