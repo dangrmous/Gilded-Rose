@@ -53,9 +53,11 @@ func adjustQuality(item *Item) {
 }
 
 func getQualityRate(item *Item) int {
-	qualityRate := -1
-	if item.Name == `Aged Brie` {
-		qualityRate = 1
+	var qualityRate = -1
+	if value, found := specialItems[item.Name]; found {
+		if qualityRate != value.qualityRate {
+			qualityRate = value.qualityRate
+		}
 	}
 	if item.SellIn <= 0 {
 		qualityRate = qualityRate * 2
