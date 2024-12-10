@@ -5,12 +5,18 @@ type Item struct {
 	SellIn, Quality int
 }
 
+type extendedItem struct {
+	item *Item
+	sid  specialItemData
+}
+
 type qualityRateAdjustment struct {
 	whenSellInBelow int
 	newRate         int
 }
 
 type specialItemData struct {
+	hasQualityRate         bool
 	qualityRate            int
 	qualityRateAdjustments []qualityRateAdjustment
 	fixedSellIn            bool
@@ -20,13 +26,17 @@ type specialItemData struct {
 
 var specialItems = map[string]specialItemData{
 	"Sulfuras, Hand of Ragnaros": {
-		qualityRate: 0,
-		fixedSellIn: true,
+		hasQualityRate: true,
+		qualityRate:    0,
+		fixedSellIn:    true,
 	},
 	"Aged Brie": {
-		qualityRate: 1,
+		hasQualityRate: true,
+		qualityRate:    1,
 	},
 	"Backstage passes to a TAFKAL80ETC concert": {
+		hasQualityRate: true,
+		qualityRate:    1,
 		qualityRateAdjustments: []qualityRateAdjustment{
 			{whenSellInBelow: 11, newRate: 2},
 			{whenSellInBelow: 6, newRate: 3},
@@ -36,11 +46,12 @@ var specialItems = map[string]specialItemData{
 	},
 }
 
-func adjustQuality(item *Item) {
+func adjustQuality(ei extendedItem) {
+	item := ei.item
 	if item.Name == `Sulfuras, Hand of Ragnaros` {
 		return
 	}
-	item.Quality += getQualityRate(item)
+	item.Quality += getQualityRate(ei)
 	if item.Name == "Backstage passes to a TAFKAL80ETC concert" && item.SellIn <= 0 {
 		item.Quality = 0
 	}
@@ -52,29 +63,25 @@ func adjustQuality(item *Item) {
 	}
 }
 
-func getQualityRate(item *Item) int {
-	var qualityRate = -1
-	if value, found := specialItems[item.Name]; found {
-		if qualityRate != value.qualityRate {
-			qualityRate = value.qualityRate
-		}
+func getQualityRate(ei extendedItem) int {
+	item := ei.item
+	qualityRate := -1
+	if ei.sid.hasQualityRate {
+		qualityRate = ei.sid.qualityRate
 	}
 	if item.SellIn <= 0 {
 		qualityRate = qualityRate * 2
 	}
-	if item.Name == "Backstage passes to a TAFKAL80ETC concert" {
-		qualityRate = 1
-		if item.SellIn < 11 {
-			qualityRate = 2
-		}
-		if item.SellIn < 6 {
-			qualityRate = 3
+	for _, qra := range ei.sid.qualityRateAdjustments {
+		if item.SellIn < qra.whenSellInBelow {
+			qualityRate = qra.newRate
 		}
 	}
 	return qualityRate
 }
 
-func adjustSellIn(item *Item) {
+func adjustSellIn(ei extendedItem) {
+	item := ei.item
 	if item.Name == `Sulfuras, Hand of Ragnaros` {
 		return
 	}
@@ -83,8 +90,17 @@ func adjustSellIn(item *Item) {
 
 func UpdateQuality(items []*Item) {
 	for i := 0; i < len(items); i++ {
-		adjustQuality(items[i])
-		adjustSellIn(items[i])
+		var extraData specialItemData
+		if si, found := specialItems[items[i].Name]; found {
+			extraData = si
+		} else {
+			extraData = specialItemData{}
+		}
+		exti := extendedItem{
+			item: items[i],
+			sid:  extraData,
+		}
+		adjustQuality(exti)
+		adjustSellIn(exti)
 	}
-
 }
