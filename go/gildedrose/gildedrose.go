@@ -48,10 +48,11 @@ var specialItems = map[string]specialItemData{
 
 func adjustQuality(ei extendedItem) {
 	item := ei.item
-	if item.Name == `Sulfuras, Hand of Ragnaros` {
+	qr := getQualityRate(ei)
+	if qr == 0 {
 		return
 	}
-	item.Quality += getQualityRate(ei)
+	item.Quality += qr
 	if item.Name == "Backstage passes to a TAFKAL80ETC concert" && item.SellIn <= 0 {
 		item.Quality = 0
 	}
