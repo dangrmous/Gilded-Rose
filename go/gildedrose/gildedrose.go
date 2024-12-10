@@ -81,7 +81,7 @@ func getQualityRate(ei extendedItem) int {
 
 func adjustSellIn(ei extendedItem) {
 	item := ei.item
-	if item.Name == `Sulfuras, Hand of Ragnaros` {
+	if ei.sid.fixedSellIn {
 		return
 	}
 	item.SellIn -= 1
