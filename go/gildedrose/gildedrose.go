@@ -20,8 +20,7 @@ type specialItemData struct {
 	qualityRate            int
 	qualityRateAdjustments []qualityRateAdjustment
 	fixedSellIn            bool
-	hasZeroQualitySellIn   bool
-	zeroQualitySellIn      int
+	zeroQualityAfterSellIn bool
 }
 
 var specialItems = map[string]specialItemData{
@@ -41,8 +40,7 @@ var specialItems = map[string]specialItemData{
 			{whenSellInBelow: 11, newRate: 2},
 			{whenSellInBelow: 6, newRate: 3},
 		},
-		hasZeroQualitySellIn: true,
-		zeroQualitySellIn:    0,
+		zeroQualityAfterSellIn: true,
 	},
 }
 
@@ -53,7 +51,7 @@ func adjustQuality(ei extendedItem) {
 		return
 	}
 	item.Quality += qr
-	if item.Name == "Backstage passes to a TAFKAL80ETC concert" && item.SellIn <= 0 {
+	if ei.sid.zeroQualityAfterSellIn && item.SellIn <= 0 {
 		item.Quality = 0
 	}
 	if item.Quality > 50 {
